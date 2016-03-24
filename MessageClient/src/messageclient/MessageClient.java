@@ -38,7 +38,7 @@ public class MessageClient implements Runnable{
     private Socket sendMessageSocket = null;
     private InetAddress localAddress ;
     private String serverAddress; 
-    private JoinSocket serverSocket;
+    private static JoinSocket serverSocket;
     
     //GUI contents
    public static JFrame mainFrame = null;
@@ -82,7 +82,8 @@ public class MessageClient implements Runnable{
             Thread.currentThread().interrupt();
         }
         System.out.println("mess1");
-         client.sendMessage("Hello World");
+         client.broadcast("Hello World");
+        /*
         try {
             Thread.sleep(1000);                 //1000 milliseconds is one second.
         } catch(InterruptedException ex) {
@@ -115,7 +116,7 @@ public class MessageClient implements Runnable{
      }
      
      //this will send to all
-     public void broadcast(String message){
+     public static void broadcast(String message){
          serverSocket.broadcast(message);
      }
      
@@ -135,15 +136,19 @@ public class MessageClient implements Runnable{
         JPanel chatPane = new JPanel(new BorderLayout());
         chatText = new JTextArea(15, 30);
         chatText.setLineWrap(true);
-        chatText.setEditable(true);
+        chatText.setEditable(false);
         JScrollPane textPane = new JScrollPane(chatText, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
             JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        
+        
         //Im not sure if this is how you do it
         keyListener = new ActionAdapter() {
-            public void actionPerformed(java.awt.event.KeyEvent evt) {
-                if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-                    //TODO: run a check, see what radio button is currently selected
-                    //broadcast(chatText.getSelectedText());
+            public void actionPerformed(ActionEvent e) {
+                if (!chatBar.getText().isEmpty()) {
+                    //TODO: run a check, see what radio button is currently selected aka if on broadcast or specific user
+                    String toSend = chatText.getText().toString();
+                    System.out.println(toSend);
+                    //broadcast(toSend);
                 }
             }
         };
