@@ -20,7 +20,6 @@ import java.util.logging.Logger;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-
 /**
  *
  * @author Ryan & Ribka
@@ -52,7 +51,7 @@ public class MessageClient implements Runnable{
    public static JRadioButton lobby2 = null;
    public static JRadioButton lobby3 = null;
    public static JButton sendButton = null;
-    
+   
 
     MessageClient(){
         try {
@@ -69,13 +68,14 @@ public class MessageClient implements Runnable{
      */
     public static void main(String[] args) {
         MessageClient client = new MessageClient();
-        String ipString = JOptionPane.showInputDialog("Enter Sever IP Adress:");
+        String ipString = JOptionPane.showInputDialog("Enter Server IP Adress:");
         client.setServerAddress(ipString);
         String username = JOptionPane.showInputDialog("Enter your username");
         //String username = JOptionPane.showInputDialog("Username already taken, please enter a new unique one");
         client.setUserName(username, client.serverAddress);
         //Run the chat program GUI
         initGUI();
+        /*
         try {
             Thread.sleep(1000);                 //1000 milliseconds is one second.
         } catch(InterruptedException ex) {
@@ -97,6 +97,8 @@ public class MessageClient implements Runnable{
         }
         System.out.println("mess3");
         client.sendMessage("Hello Joe");
+        */
+       
     }
     
      public void setUserName(String userName, String serverHost){
@@ -106,12 +108,27 @@ public class MessageClient implements Runnable{
      public void sendMessage(String message){
          serverSocket.sendMessage(message);
      }
+     
+     //for messaging specific user
+     public void messageTo(String message /*add receiver ID here*/){
+         serverSocket.messageTo(message);
+     }
+     
+     //this will send to all
+     public void broadcast(String message){
+         serverSocket.broadcast(message);
+     }
+     
+     public void disconnect(){
+         serverSocket.disconnect();
+     }
     
     public void setServerAddress(String ipAddress){
         serverAddress = ipAddress;
     }
     
     public static void initGUI(){
+        ActionAdapter keyListener = null;
         //set up lobby pane
         JPanel lobbyPane = initLobby();
         //set up chat pane
@@ -121,8 +138,19 @@ public class MessageClient implements Runnable{
         chatText.setEditable(true);
         JScrollPane textPane = new JScrollPane(chatText, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
             JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        //Im not sure if this is how you do it
+        keyListener = new ActionAdapter() {
+            public void actionPerformed(java.awt.event.KeyEvent evt) {
+                if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+                    //TODO: run a check, see what radio button is currently selected
+                    //broadcast(chatText.getSelectedText());
+                }
+            }
+        };
         chatBar = new JTextField();
         chatBar.setEnabled(true);
+        //chatBar.setActionCommand("message");
+        chatBar.addActionListener(keyListener);
         chatPane.add(chatBar, BorderLayout.SOUTH);
         chatPane.add(textPane, BorderLayout.CENTER);
         chatPane.setPreferredSize(new Dimension(200,200));
@@ -140,7 +168,6 @@ public class MessageClient implements Runnable{
         mainFrame.setLocation(200,200);
         mainFrame.pack();
         mainFrame.setVisible(true);
-
     }
     
     public static JPanel initLobby(){
@@ -170,7 +197,16 @@ public class MessageClient implements Runnable{
       return optionsPane;
     }
         
-  
+  /*private void enterPress(java.awt.event.KeyEvent evt, String message){
+      if(evt.getKeyCode()==KeyEvent.VK_ENTER){
+          broadcast(message);
+      }
+  }*/
+    static class ActionAdapter implements ActionListener {
+
+        public void actionPerformed(ActionEvent e) {
+        }
+    }
 
     @Override
     public void run() {

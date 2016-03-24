@@ -12,4 +12,8 @@ package messageclient;
 public class MesssageType {
     public final static String JOIN = "JOIN";
     public final static String MESSAGE = "MESS";
+    public final static String MESSAGETO = "MESSTO";
+    public final static String BROADCAST = "TOALL";
+    public final static String DISCONNECT = "DISCON";
+    
 }
